@@ -12,15 +12,22 @@ rails = LLMRails(
     config,
     verbose=True)
 
+memory = []
+
 @router.post("/chat")
 async def chat(
     input: str
 ):
     
     # Define role and question to be asked
-    response = await rails.generate_async(messages=[{
+    history = {
         "role": "user",
         "content": input
-    }])
+    }
+    memory.append(history)
+    
+    response = await rails.generate_async(messages=memory)
+
+    memory.append(response)
 
     return response
